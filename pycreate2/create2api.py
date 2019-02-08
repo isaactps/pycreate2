@@ -13,6 +13,7 @@ import struct  # there are 2 places that use this ... why?
 import time
 from pycreate2.packets import SensorPacketDecoder
 from pycreate2.createSerial import SerialCommandInterface
+from pycreate2.createMQTT import MQTTCommandInterface
 from pycreate2.OI import OPCODES
 # from pycreate2.OI import calc_query_data_len
 from pycreate2.OI import DRIVE
@@ -43,8 +44,12 @@ class Create2(object):
 		- creates serial port
 		- creates decoder
 		"""
-		self.SCI = SerialCommandInterface()
-		self.SCI.open(port, baud)
+                if 'mqtt' in port:
+                    self.SCI = MQTTCommandInterface()
+                    self.SCI.open(port)
+                else:
+                    self.SCI = SerialCommandInterface()
+                    self.SCI.open(port, baud)
 		# self.decoder = SensorPacketDecoder()
 		self.decoder = None
 		self.sleep_timer = 0.5
@@ -307,15 +312,18 @@ class Create2(object):
 				Create 2's display. C'est la vie. Any Create non-printable character
 				will be replaced with a space ' '.
 		"""
-		display_list = [' ']*4
+		#display_list = [' ']*4
+		display_list = [32]*4
 		for i, c in enumerate(display_string[:4]):
 			val = ord(c.upper())
 			if 32 <= val <= 126:
 				display_list[i] = val
 			else:
 				# Char was not available. Just print a blank space
-				display_list[i] = ' '
+				display_list[i] = 32
+				#display_list[i] = ' '
 
+		#print('phrase:', ''.join(display_list))
 		self.SCI.write(OPCODES.DIGIT_LED_ASCII, tuple(display_list))
 
 	# ------------------------ Songs ----------------------------
