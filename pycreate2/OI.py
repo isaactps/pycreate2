@@ -64,6 +64,28 @@ OPCODES             = Namespace(
 	STOP=173
 )
 
+OPCODES_STRINGS = {
+        7:'RESET',
+        35:'OI_MODE',
+        128:'START',
+        131:'SAFE',
+        132:'FULL',
+        133:'POWER',
+        137:'DRIVE',
+        138:'MOTORS',
+        139:'LED',
+        140:'SONG',
+        141:'PLAY',
+        142:'SENSORS',
+        143:'SEEK_DOCK',
+        144:'MOTORS_PWM',
+        145:'DRIVE_DIRECT',
+        146:'DRIVE_PWM',
+        149:'QUERY_LIST',
+        164:'DIGIT_LED_ASCII',
+        173:'STOP'
+        } 
+
 RESPONSE_SIZES = {
 	0: 26, 1: 10, 2: 6, 3: 10, 4: 14, 5: 12, 6: 52,
 	# actual sensors

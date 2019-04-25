@@ -9,9 +9,9 @@ import time
 
 
 if __name__ == "__main__":
-        port = 'mqtt:DA01NX3Z'
-
-	bot = Create2(port=port)
+        config = {}
+        config["transport"] = 'echo'
+	bot = Create2(config)
 
 	bot.start()
 

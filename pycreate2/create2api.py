@@ -14,6 +14,7 @@ import time
 from pycreate2.packets import SensorPacketDecoder
 from pycreate2.createSerial import SerialCommandInterface
 from pycreate2.createMQTT import MQTTCommandInterface
+from pycreate2.createEcho import EchoCommandInterface
 from pycreate2.OI import OPCODES
 # from pycreate2.OI import calc_query_data_len
 from pycreate2.OI import DRIVE
@@ -38,18 +39,22 @@ class Create2(object):
 	This is the only class that outside scripts should be interacting with.
 	"""
 
-	def __init__(self, port, baud=115200):
+	#def __init__(self, port, baud=115200):
+	def __init__(self, config):
 		"""
 		Constructor, sets up class
 		- creates serial port
 		- creates decoder
 		"""
-                if 'mqtt' in port:
+                if config["transport"] == 'mqtt':
                     self.SCI = MQTTCommandInterface()
                     self.SCI.open(port)
+                elif config["transport"] == 'echo':
+                    self.SCI = EchoCommandInterface()
+                    self.SCI.open()
                 else:
                     self.SCI = SerialCommandInterface()
-                    self.SCI.open(port, baud)
+                    self.SCI.open(config["port"], config["baud"])
 		# self.decoder = SensorPacketDecoder()
 		self.decoder = None
 		self.sleep_timer = 0.5
@@ -201,7 +206,7 @@ class Create2(object):
 		"""
 		v = self.limit(velocity, -500, 500)
 		r = self.limit(radius, -2000, 2000)
-		# print('drive_turn: {} {}'.format(v, r))
+		#print('drive_turn: {} {}'.format(v, r))
 		data = struct.unpack('4B', struct.pack('>2h', v, r))
 		self.SCI.write(OPCODES.DRIVE, data)
 
@@ -215,7 +220,7 @@ class Create2(object):
 
 		"""
 		v = self.limit(velocity, -500, 500)
-		# print('drive_straight: {}'.format(v))
+		#print('drive_straight: {}'.format(v))
 		data = struct.unpack('4B', struct.pack('>hH', v, DRIVE.STRAIGHT))  # write do this?
 		self.SCI.write(OPCODES.DRIVE, data)
 
