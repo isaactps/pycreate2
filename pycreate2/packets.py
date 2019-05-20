@@ -80,6 +80,47 @@ Sensors = namedtuple('Sensors', [
 	'statis'
 ])
 
+Sensors_0 = namedtuple('Sensors_0', [
+	'bumps_wheeldrops',
+	'wall',
+	'cliff_left',
+	'cliff_front_left',
+	'cliff_front_right',
+	'cliff_right',
+	'virtual_wall',
+	'overcurrents',
+	'dirt_detect',
+	'ir_opcode',
+	'buttons',
+	'distance',
+	'angle',
+	'charger_state',
+	'voltage',
+	'current',
+	'temperature',
+	'battery_charge',
+	'battery_capacity',
+])
+
+Sensors_101 = namedtuple('Sensors_101', [
+	'encoder_counts_left',
+	'encoder_counts_right',
+	'light_bumper',
+	'light_bumper_left',
+	'light_bumper_front_left',
+	'light_bumper_center_left',
+	'light_bumper_center_right',
+	'light_bumper_front_right',
+	'light_bumper_right',
+	'ir_opcode_left',
+	'ir_opcode_right',
+	'left_motor_current',
+	'right_motor_current',
+	'main_brush_current',
+	'side_brush_current',
+	'statis'
+])
+
 
 def SensorPacketDecoder(data):
 	"""
@@ -195,6 +236,123 @@ def SensorPacketDecoder(data):
 		unpack_short(data[73:75])[0],           # right motor current
 		unpack_short(data[75:77])[0],           # main brush current
 		unpack_short(data[77:79])[0],           # side brush current
+		stasis
+	)
+
+	return sensors
+
+def SensorPacketDecoder_0(data):
+	"""
+	This function decodes a Create 2 packet 0 and returns a Sensor object,
+	which is really a namedtuple. The Sensor class holds all sensor values for
+	the Create 2. It is basically like a C struct.
+	"""
+
+	if len(data) != 26:
+		raise Exception('Sensor data not 26 bytes long, it is: {}'.format(len(data)))
+	#else:
+	#	print("Entering SensorPacketDecoder_0\n")
+
+	# packets 32, 33 or data bits 36, 37, 38 - unused
+	# packet 16 or data bit 9 - unused
+
+	# self.bumps_and_wheel_drops = BumpsAndWheelDrop(data[0:1])
+	d = unpack_unsigned_byte(data[0:1])[0]
+	bumps_wheeldrops = BumpsAndWheelDrop(
+		bool(d & BUMPS_WHEEL_DROPS.BUMP_RIGHT),
+		bool(d & BUMPS_WHEEL_DROPS.BUMP_LEFT),
+		bool(d & BUMPS_WHEEL_DROPS.WHEEL_DROP_RIGHT),
+		bool(d & BUMPS_WHEEL_DROPS.WHEEL_DROP_LEFT)
+	)
+	d = unpack_unsigned_byte(data[7:8])[0]
+	overcurrents = WheelOvercurrents(
+		bool(d & WHEEL_OVERCURRENT.SIDE_BRUSH),
+		bool(d & WHEEL_OVERCURRENT.MAIN_BRUSH),
+		bool(d & WHEEL_OVERCURRENT.RIGHT_WHEEL),
+		bool(d & WHEEL_OVERCURRENT.LEFT_WHEEL)
+	)
+	# self.buttons = Buttons(data[11:12])
+	d = unpack_unsigned_byte(data[11:12])[0]
+	buttons = Buttons(
+		bool(d & BUTTONS.CLEAN),
+		bool(d & BUTTONS.SPOT),
+		bool(d & BUTTONS.DOCK),
+		bool(d & BUTTONS.MINUTE),
+		bool(d & BUTTONS.HOUR),
+		bool(d & BUTTONS.DAY),
+		bool(d & BUTTONS.SCHEDULE),
+		bool(d & BUTTONS.CLOCK)
+	)
+
+	sensors = Sensors_0(
+		bumps_wheeldrops,
+		unpack_bool_byte(data[1:2])[0],         # wall
+		unpack_bool_byte(data[2:3])[0],         # cliff left
+		unpack_bool_byte(data[3:4])[0],         # cliff front left
+		unpack_bool_byte(data[4:5])[0],         # cliff front right
+		unpack_bool_byte(data[5:6])[0],         # cliff right
+		unpack_bool_byte(data[6:7])[0],         # virtual wall
+		overcurrents,
+		unpack_byte(data[8:9])[0],              # dirt detect
+		# packet 16 or data bit 9 - unused
+		unpack_unsigned_byte(data[10:11])[0],   # ir opcode
+		buttons,
+		unpack_short(data[12:14])[0],           # distance
+		unpack_short(data[14:16])[0],           # angle
+		unpack_unsigned_byte(data[16:17])[0],   # charge state
+		unpack_unsigned_short(data[17:19])[0],  # voltage
+		unpack_short(data[19:21])[0],           # current
+		unpack_byte(data[21:22])[0],            # temperature in C, use CtoF if needed
+		unpack_unsigned_short(data[22:24])[0],  # battery charge
+		unpack_unsigned_short(data[24:26])[0],  # battery capacity
+	)
+
+	return sensors
+
+def SensorPacketDecoder_101(data):
+	"""
+	This function decodes a Create 2 packet 101 and returns a Sensor object,
+	which is really a namedtuple. The Sensor class holds all sensor values for
+	the Create 2. It is basically like a C struct.
+	"""
+
+	if len(data) != 28:
+		raise Exception('Sensor data not 28 bytes long, it is: {}'.format(len(data)))
+
+	# self.light_bumper = LightBumper(data[4:5])
+	d = unpack_unsigned_byte(data[4:5])[0]
+	light_bumper = LightBumper(
+		bool(d & LIGHT_BUMPER.LEFT),
+		bool(d & LIGHT_BUMPER.FRONT_LEFT),
+		bool(d & LIGHT_BUMPER.CENTER_LEFT),
+		bool(d & LIGHT_BUMPER.CENTER_RIGHT),
+		bool(d & LIGHT_BUMPER.FRONT_RIGHT),
+		bool(d & LIGHT_BUMPER.RIGHT)
+	)
+
+	# self.stasis = Stasis(data[27:28])
+	d = unpack_unsigned_byte(data[27:28])[0]
+	stasis = Stasis(
+		bool(d & STASIS.TOGGLING),
+		bool(d & STASIS.DISABLED)
+	)
+
+	sensors = Sensors_101(
+		unpack_short(data[0:2])[0],             # encoder left
+		unpack_short(data[2:4])[0],             # encoder right
+		light_bumper,
+		unpack_unsigned_short(data[5:7])[0],    # light bump left
+		unpack_unsigned_short(data[7:9])[0],    # light bmp front left
+		unpack_unsigned_short(data[9:11])[0],   # light bump center left
+		unpack_unsigned_short(data[11:13])[0],  # light bump center right
+		unpack_unsigned_short(data[13:15])[0],  # light bump front right
+		unpack_unsigned_short(data[15:17])[0],  # light bump right
+		unpack_unsigned_byte(data[17:18])[0],   # ir opcode left
+		unpack_unsigned_byte(data[18:19])[0],   # ir opcode right
+		unpack_short(data[19:21])[0],           # left motor current
+		unpack_short(data[21:23])[0],           # right motor current
+		unpack_short(data[23:25])[0],           # main brush current
+		unpack_short(data[25:27])[0],           # side brush current
 		stasis
 	)
 
