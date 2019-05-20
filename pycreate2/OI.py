@@ -61,7 +61,10 @@ OPCODES             = Namespace(
 	# BUTTONS=165,
 	# SCHEDULE=167,
 	# SET_DAY_TIME=168,
-	STOP=173
+	STOP=173,
+	DRIVE_DIST_RANGER=201,
+	TURN_ANGLE_RANGER=202,
+	LINE_FOLLOW_RANGER=203
 )
 
 OPCODES_STRINGS = {
@@ -254,3 +257,4 @@ REMOTE_OPCODES = {
 	254: "red-buoy-and-green-buoy-and-force-field",
 	255: "none"
 }
+
