@@ -199,6 +199,7 @@ Change Log
 ---------------
 
 ========== ======= =============================
+2019-05-20         Support for TCP/UDP and mBot Ranger
 2017-08-26 0.7.3   code clean up and doc updates
 2017-08-26 0.7.2   updates and fixes
 2017-05-26 0.5.0   init and published to pypi
