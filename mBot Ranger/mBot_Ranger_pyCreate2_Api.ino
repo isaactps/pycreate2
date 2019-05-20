@@ -1,17 +1,3 @@
-/* #include <EEPROM.h>
-#include <Bridge.h>
-#include <BridgeClient.h>
-#include <BridgeServer.h>
-#include <BridgeSSLClient.h>
-#include <BridgeUdp.h>
-#include <Console.h>
-#include <FileIO.h>
-#include <HttpClient.h>
-#include <Mailbox.h>
-#include <Process.h>
-#include <YunClient.h>
-#include <YunServer.h> */
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
