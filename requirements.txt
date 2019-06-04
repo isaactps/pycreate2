@@ -1,4 +1,4 @@
 pyserial
 simplejson
 build_utils
-paho.mqtt
+paho-mqtt
