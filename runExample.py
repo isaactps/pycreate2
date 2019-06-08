@@ -12,6 +12,7 @@ if __name__ == "__main__":
         config = {}
         #config.transport = 'mqtt'
         config["transport"] = 'echo'
+	config["robot"] = 'Create2'
         #port = 'mqtt:DA01NX3Z'  # this is the serial port on my iMac
 	# port = '/dev/ttyUSB0'  # this is the serial port on my raspberry pi
         
