@@ -11,6 +11,7 @@ import time
 if __name__ == "__main__":
         config = {}
         config["transport"] = 'echo'
+	config["robot"] = 'Create2'
 	bot = Create2(config)
 
 	bot.start()
