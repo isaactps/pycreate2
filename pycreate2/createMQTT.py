@@ -9,7 +9,7 @@ from __future__ import division
 import struct
 import io
 import paho.mqtt.client as mqtt
-import fifo 
+import pycreate2.fifo 
 
 class MQTTCommandInterface(object):
 	"""
@@ -25,11 +25,11 @@ class MQTTCommandInterface(object):
 		it.
 		"""
 		#self.ser = serial.Serial()
-                #self.readf = io.BytesIO('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+		#self.readf = io.BytesIO('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-                self.is_open = False
+		self.is_open = False
 		self.mqttc = mqtt.Client()
-                self.readf = fifo.BytesFIFO(100)
+		self.readf = fifo.BytesFIFO(100)
 		self.mqttc.on_message = self.on_message
 		self.mqttc.on_connect = self.on_connect
 		self.mqttc.on_publish = self.on_publish
@@ -37,23 +37,24 @@ class MQTTCommandInterface(object):
 
 
 	def on_connect(self, mqttc, obj, flags, rc):
-	    print("on_connect rc: " + str(rc))
+		print("on_connect rc: " + str(rc))
 
 
 	def on_message(self, mqttc, obj, msg):
-	    print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-            print(self.readf.write(msg.payload))
+		print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+		print(self.readf.write(msg.payload))
+
 
 	def on_publish(self, mqttc, obj, mid):
-	    print("mid: " + str(mid))
+		print("mid: " + str(mid))
 
 
 	def on_subscribe(self, mqttc, obj, mid, granted_qos):
-	    print("Subscribed: " + str(mid) + " " + str(granted_qos))
+		print("Subscribed: " + str(mid) + " " + str(granted_qos))
 
 
 	def on_log(self, mqttc, obj, level, string):
-	    print(string)
+		print(string)
 
 	def __del__(self):
 		"""
@@ -68,26 +69,26 @@ class MQTTCommandInterface(object):
 		Opens a serial port to the create.
 
 		port: the serial port to open, ie, '/dev/ttyUSB0'
-		buad: default is 115200, but can be changed to a lower rate via the create api
+		baud: default is 115200, but can be changed to a lower rate via the create api
 		"""
 		#self.ser.port = port
 		#self.ser.baudrate = baud
 		#self.ser.timeout = timeout
 		# print self.ser.name
 		if self.is_open:
-                        self.close()
+			self.close()
 
 		self.mqttc.connect("localhost", 1883)
 		self.mqttc.subscribe("topic2", 0)
-                self.mqttc.loop_start()
+		self.mqttc.loop_start()
 
 		#self.mqttc.loop_forever()
 
-                print('-'*40)
-                print('Connected')
-                print('-'*40)
+		print('-'*40)
+		print('Connected')
+		print('-'*40)
 
-                self.is_open = True
+		self.is_open = True
 
 	def write(self, opcode, data=None):
 		"""
@@ -104,11 +105,11 @@ class MQTTCommandInterface(object):
 		if data:
 			msg += data
 
-                print(msg)
+		print(msg)
 
 		data = struct.pack('B' * len(msg), *msg)
 		print([hex(ord(c)) for c in data])
-                self.mqttc.publish("topic1", data)
+		self.mqttc.publish("topic1", data)
 		#self.write(data)
 		#self.write(struct.pack('B' * len(msg), *msg))
 
@@ -123,9 +124,9 @@ class MQTTCommandInterface(object):
 			raise Exception('You must open the mqtt topic first')
 
 		#data = self.ser.read(num_bytes)
-                print("Reading ",num_bytes)
-                data = self.readf.read(num_bytes)
-                print("data ",len(data))
+		print("Reading ",num_bytes)
+		data = self.readf.read(num_bytes)
+		print("data ",len(data))
 
 		return data
 
@@ -134,5 +135,5 @@ class MQTTCommandInterface(object):
 		Closes the serial connection.
 		"""
 		if self.is_open:
-                    print('Closing MQTT')
-                    self.mqttc.disconnect()
+			print('Closing MQTT')
+			self.mqttc.disconnect()
