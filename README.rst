@@ -32,7 +32,7 @@ Development
 
 If you wish to develop and submit git-pulls, you can do::
 
-	git clone https://github.com/walchko/pycreate2
+	git clone https://github.com/isaactps/pycreate2
 	cd pycreate2
 	pip install -e .
 
